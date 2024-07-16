@@ -1,0 +1,32 @@
+service: ServerlessDashboard
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  region: ap-south-1
+  stage: beta
+  runtime: python3.10
+  memorySize: 256 # optional, in MB, default is 1024
+  timeout: 30 # optional, in seconds, default is 6
+
+functions:
+  multiprocessing:
+    name: serverless-${sls:stage} # optional, Deployed Lambda name
+    handler: handler.hello
+    logRetentionInDays: 1
+    environment:
+      APP_ENV: dev
+      CAT_FACT: https://catfact.ninja/fact
+      COIN_DESK: https://api.coindesk.com/v1/bpi/currentprice.json
+    events:
+      - http:
+          path: /multi-processing
+          method: any
+      - http:
+          path: /new/{function}/{functionName}
+          method: any
+
+package:
+  exclude:
+    - README.md
+    - azure-pipelines.yml
